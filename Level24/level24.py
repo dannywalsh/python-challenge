@@ -9,7 +9,7 @@ def getIm():
     return Image.open('resources/maze.png')
 
 def getStartPo(im = getIm()):
-    return [dict(nextPo = (im.size[0]-2, 0), currentPo=(0, 0), redValue=(0))]
+    return [dict(nextPo = (im.size[0]-2, 0), currentPo=(0, 0))]
 
 def hasHitWall(position):
     return getIm().getpixel(position) == getWallP() 
@@ -41,7 +41,7 @@ def getRedValue(current, im = getIm()):
     return im.getpixel(current)[0]
 
 def getNextPo(current, item):
-    return dict(nextPo = item, currentPo = current, redValue = getRedValue(current))
+    return dict(nextPo = item, currentPo = current)
 
 def transit(position, getNextValue, breakCond):
     yield position
@@ -59,21 +59,42 @@ def getNextNode(po):
             #print "what is i %r"%(i,)
             return i
         elif len(i) == 0:
-            "Deadend : %r"%(po,)
+            #"Deadend : %r"%(po,)
             return []
 
 def process(start):
     yield start
-    #print "start : %r"%(start,)
-    #print "getstartnode %r"%(getNextNode(start),)
     for nodelist in getNextNode(start):
-        #print "node : %r"%(nodelist,)
         for n in process([nodelist]):
-            #print "n : %r"%(n,)
             yield n
 
+def findIndex(aList, pos):
+    for index, item in enumerate(aList):
+        if item['currentPo'] == pos[0]['currentPo']:
+            return index
+
+def showDeadEnd(aList):
+    for item in aList:
+        print"DeadEnd : %r"%(item,)
+
+def getValidNodeList(aList, lastIndex):
+    if lastIndex != None:
+        showDeadEnd(aList[lastIndex:])
+        return aList[:lastIndex]
+    return aList
+
 def main():
-    for c, i in islice(izip(count(1),process(getStartPo())),1000):
-        print "count %d :  %r " % (c,i,)
+    aList = []
+    for c, i in islice(izip(count(1),process(getStartPo())),10000):
+        i[0]['count'] = c
+        if i[0]['currentPo'] == (1,639):
+            print"END"
+            break
+        aList = getValidNodeList(aList, findIndex(aList,i))
+        aList.append(i[0])
+        #print "count %d :  %r " % (c,i,)
+    with open('resources/save.txt','w') as f:
+        for item in aList:
+            f.write("%s\n"%item)
 
 if __name__ == "__main__" : main()
