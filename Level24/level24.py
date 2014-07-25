@@ -47,23 +47,18 @@ def getNextPo(current, item):
     return dict(nextPo = item, currentPo = current)
 
 def transit(position, getNextValue, breakCond):
-    #print"position : %r"%(position,)
     yield position
     
     for x in transit(getNextValue(position[0]), getNextValue, breakCond): 
         yield x
 
         if breakCond(x):
-            #print "\n BREAK CONDITION"
             break
 
 def getNextNode(po):
     for i in transit(po, getValidMoves, lambda x : True if len(x) != 1 else False):
-        #print"iiii : %r"%(i,)
         if len(i) > 1:
-            #print "what is i %r"%(i,)
             return i
-    #print"Something wrong"
     return []
 
 def checkList(aList):
@@ -76,22 +71,15 @@ def checkList(aList):
 
 def main():
     aList = [getStartPo()]
-    #print"aList : %r"%(aList,)
-    #print"aList[-1] : %r"%(aList[-1],)
-    #print"aList[-1][0] : %r"%(aList[-1][0],)
-    for i in islice(count(),50):
-        #print("aList")
-        #pprint(aList)
-        #print"Before append : %r"%(aList,)
+    for i in islice(count(),10050):
         aList.append(getNextNode([aList[-1][0]])) 
-        #print"Before checklist after append : %r"%(aList,)
         aList = checkList(aList)
-        #print"After checklist : %r"%(aList,)
         if aList[-1][0]['currentPo'] == (1,639):
+            print"END"
             break
 
     with open('resources/save.txt','w') as f:
         for item in aList:
-            f.write("%s\n"%item)
+            f.write("%s\n"%item[0])
 
 if __name__ == "__main__" : main()
