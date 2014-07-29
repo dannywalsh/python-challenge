@@ -80,11 +80,18 @@ def checkList(aList):
         return checkList(aList)
     return aList
 
-def getNodeList(aList = [getStartPo()]):
-    while aList[-1][0]['currentPo'] != (1,639) or len(aList) != 0:
+def getNodeList(aList = [getStartPo()], des = "first"):
+    while True:
+        #aList[-1][0]['nextPo'] != (1,639) or len(aList) != 0:
         aList.append(getNextNode([aList[-1][0]])) 
         aList = checkList(aList)
-        print"len aList in getNodelist %r"%(len(aList),)
+        print"%s len aList %r currentPo : %r"%(des,len(aList),aList[-1][0]['currentPo']) 
+        if aList[-1][0]['currentPo'] == (1,639):
+            print"END"
+            break
+        if len(aList) == 0:
+            print"empty"
+            break
     return aList
 
 def getOtherPathsGen(aList):
@@ -98,14 +105,14 @@ def main():
     with open('resources/save.txt','w') as f:
         for item in aList:
             f.write("%s\n"%item)
-    print"len aList : %r"%(aList,)
-    for c, node in zip(count(),aList):
+    print"len aList : %r"%(len(aList),)
+    """for c, node in zip(count(),aList):
         if len(node) > 1:
             newList = aList[:c]
             newList.append(node[1:])
-            newList.append(getNodeList(newList))
-            print"len newList : %r c : %d"%(len(newList,c))
-
+            newList.append(getNodeList(newList,"newList"))
+            print"len newList : %r c : %d"%(len(newList),c,)
+     """
 
     #print"len first path %r"%(len(aList),)
     #for item in getOtherPathsGen(aList):
